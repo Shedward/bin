@@ -1,0 +1,23 @@
+#!/bin/sh
+
+###############################################
+# Сохраненяет скриншот в Dropbox и заносит ссылку в буфер обмена
+#
+
+# USAGE:
+# dropscr 		# снимок всего экрана
+# dropscr -s 	# выбор окна или области 
+
+# Публичная папка в Dropbox
+DRPBOX="$HOME/Dropbox/Public/i/"
+
+
+NAME=`date "+%N" | base64 | cut -b 7-12`.png
+FNAME=$DRPBOX$NAME
+
+scrot "$@" "$FNAME"
+PUBURL=`dropbox puburl "$FNAME"`
+
+echo $PUBURL
+echo $PUBURL | xclip -i
+notify-send --icon "$FNAME" Dropscr "$PUBURL"

@@ -1,0 +1,33 @@
+#!/bin/sh
+
+###############################################
+# Сохраненяет скриншот в Imgur и заносит ссылку в буфер обмена
+#
+
+# USAGE:
+# imgurscr 		# снимок всего экрана
+# imgurscr -s 	# выбор окна или области 
+
+# Временная папка для скриншота
+
+TMP=/tmp/scr/
+
+# upload to image hosting server
+# http://www.commandlinefu.com/commands/view/9341
+imgur() { 
+	curl -# -F image=@"$1" -F "key=1913b4ac473c692372d108209958fd15" \
+	http://api.imgur.com/2/upload.xml | grep -Eo "<original>(.)*</original>" \
+	| grep -Eo "http://i.imgur.com/[^<]*"
+}
+
+NAME=`date "+%N" | base64 | cut -b 7-12`.png
+FNAME=$TMP$NAME
+
+mkdir -p "$TMP"
+scrot "$@" "$FNAME"
+
+PUBURL=`imgur $FNAME`
+
+echo $PUBURL
+echo $PUBURL | xclip -i
+notify-send --icon "$FNAME" Imgurscr "$PUBURL"
