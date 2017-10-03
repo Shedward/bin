@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+
+function print_log_for_folder() {
+	PREV_DIR=$(pwd)
+	cd $1
+
+	if git rev-parse --is-inside-work-tree > /dev/null 2>&1
+	then git log --pretty=$'%aI\t%ae\t'$1$'\t%s'
+	fi
+
+	cd $PREV_DIR
+}
+
+function print_logs_for_all_repos() {
+	find . -type d -maxdepth 1 -print0 | while IFS= read -r -d $'\0' line;  do
+		print_log_for_folder $line
+	done
+}
+
+function print_all_my_logs() {
+	print_logs_for_all_repos | awk -F $'\t' '$2 == "malcev@azoft.com" || $2 == "shedwardx@gmail.com"'
+}
+
+function print_all_my_logs_in_range() {
+	if [ -z $1 ]
+	then
+		FROM_DATE=`date -v -1w +"%Y-%m-%d"`
+	else 
+		FROM_DATE=$1
+	fi
+
+	if [ -z $2 ] 
+	then 
+		TO_DATE=`date +"%Y-%m-%d"`
+	else
+		TO_DATE=$2
+	fi
+
+	print_all_my_logs | awk -F $'\t' '{ if ($1 >= "'"$FROM_DATE"'" && $1 <= "'"$TO_DATE"'") print $0 }' | sort -t$'\t' -k1
+}
+
+print_all_my_logs_in_range $1 $2
+
