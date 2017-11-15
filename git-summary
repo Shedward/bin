@@ -15,10 +15,14 @@ function print_logs_for_all_repos() {
 	find . -type d -maxdepth 1 -print0 | while IFS= read -r -d $'\0' line;  do
 		print_log_for_folder $line
 	done
+
+	find ./Analysis -type d -maxdepth 1 -print0 | while IFS= read -r -d $'\0' line; do
+		print_log_for_folder $line
+	done
 }
 
 function print_all_my_logs() {
-	print_logs_for_all_repos | awk -F $'\t' '$2 == "malcev@azoft.com" || $2 == "shedwardx@gmail.com"'
+	print_logs_for_all_repos | awk -F $'\t' '$2 == "malcev@azoft.com" || $2 == "shedwardx@gmail.com" || $2 == "v.maltsev@redmadrobot.com"'
 }
 
 function print_all_my_logs_in_range() {
