@@ -1,5 +1,15 @@
 #! /bin/sh
 
-osascript -e 'quit app "XCode"'
+XCODE_IS_RUNNING=`pgrep -x Xcode`
+
+if [[ ! -z $XCODE_IS_RUNNING ]]
+	then
+	osascript -e 'quit app "XCode"'
+fi
+
 rm -rf /Users/shed/Library/Developer/Xcode/DerivedData
-open -a XCode
+
+if [[ ! -z $XCODE_IS_RUNNING ]]
+	then
+	open -a XCode
+fi
