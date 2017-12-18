@@ -1,3 +1,0 @@
-sh /usr/share/GNUstep/Makefiles/GNUstep.sh 
-gcc `gnustep-config --objc-flags` -o /tmp/objc.bin $@ -lobjc -lgnustep-base
-/tmp/objc.bin
