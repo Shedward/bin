@@ -1,0 +1,26 @@
+#!/usr/bin/env sh
+
+LOKALISE_API_TOKEN=ae54fbc96a4d53b3f9bc4c342e9175a00988ac9e
+LOKALISE_PROJECT=11404403599f00ef160513.26173448
+LOKALISE_PROJECT_PATH=~/Projects/arameem
+LOKALISE_PROJECT_LOCALIZATION_PATH=$LOKALISE_PROJECT_PATH/ToYou/Resources
+
+
+echo "Did you switched to dev and clean up all changes? [y/N] "
+read -r RESPONSE
+
+if ! [[ "$RESPONSE" =~ ^[yY]$ ]]; then
+	echo "Then do it"
+	exit 1
+fi
+
+RESULTS_DIR=~/Desktop/UpdateStrings_$(date +'%Y_%m_%d_%H_%M_%S')
+mkdir $RESULTS_DIR
+
+CWD=$(pwd)
+lokalise --token $LOKALISE_API_TOKEN export $LOKALISE_PROJECT --type strings --export_sort a_z --replace_breaks 1  --unzip_to "$LOKALISE_PROJECT_LOCALIZATION_PATH"
+cd "$RESULTS_DIR"
+lokalise --token $LOKALISE_API_TOKEN export $LOKALISE_PROJECT --type xml --export_sort a_z --replace_breaks 1
+cd "$LOKALISE_PROJECT_PATH"
+git diff $LOKALISE_PROJECT_LOCALIZATION_PATH/en.lproj/* | egrep -e '^(-|\+)' | egrep -ve '^(---|\+\+\+)' > "$RESULTS_DIR"/changes.diff
+cd "$CWD"
